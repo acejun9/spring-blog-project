@@ -2,23 +2,60 @@ package com.example.springblogproject.controller;
 
 import com.example.springblogproject.dto.PostRequestDto;
 import com.example.springblogproject.dto.PostResponseDto;
-import com.example.springblogproject.entity.Post;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/posts")
 public class PostController {
+    private final PostService postService;
 
-    @GetMapping("/api/posts")
-    public ModelAndView posts() {
-        return new ModelAndView(List<PostResponseDto>);
+    @GetMapping("")
+    public ResponseEntity<List<PostResponseDto>> getAllPost() {
+        return new ResponseEntity<>(postService.getAllPost(), HttpStatus.OK);
     }
 
+    @PostMapping("")
+    public ResponseEntity<PostResponseDto> createPost(@Validated @RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return new ResponseEntity<>(postService.createPost(postRequestDto, userDetails.getUsername()),HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponseDto> getSelectPost(@PathVariable Long id){
+        return new ResponseEntity<>(postService.getPost(id),HttpStatus.OK);
+    }
+
+    @PutMapping("/user/{id}")
+    public ResponseEntity<PostResponseDto> updateMyPost(
+            @PathVariable Long id, @RequestBody @Validated PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        String username = userDetails.getUsername();
+        return new ResponseEntity<>(postService.updateMyPost(id, postRequestDto, username),HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<PostResponseDto> updateAdminPost(
+            @PathVariable Long id, @RequestBody @Validated PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return new ResponseEntity<>(postService.updateAdminPost(id, postRequestDto),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<String> deleteMyPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        String username = userDetails.getUsername();
+        postService.deleteMyPost(id, username);
+        return new ResponseEntity<>("delete success",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<String> deleteAdminPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        postService.deleteAdminPost(id);
+        return new ResponseEntity<>("delete success",HttpStatus.OK);
+    }
 }
