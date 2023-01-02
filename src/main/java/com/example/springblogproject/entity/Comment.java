@@ -19,7 +19,7 @@ public class Comment {
     private String username;
 
     @Column
-    private String comment;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column
@@ -29,9 +29,9 @@ public class Comment {
     @Column
     private CommentLike commentLike;
 
-    public Comment(String username, String comment, Post post) {
+    public Comment(String username, String content, Post post) {
         this.username = username;
-        this.comment = comment;
+        this.content = content;
         this.post = post;
     }
 
