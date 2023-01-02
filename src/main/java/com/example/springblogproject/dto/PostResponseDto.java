@@ -21,13 +21,13 @@ public class PostResponseDto {
 
     private String content;
 
-    private List<CommentListDto> comments;
+    private List<CommentResponseDto> comments;
 
     private LocalDateTime createAt;
 
     private LocalDateTime modifiedAt;
 
-    private Long postLike;
+    private Integer postLike;
 
     public PostResponseDto(Post post){
         this.id = post.getId();
@@ -36,10 +36,10 @@ public class PostResponseDto {
         this.content = post.getContent();
         this.createAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
-        this.postLike = post.getPostLike();
-        List<CommentListDto> comments = new ArrayList<>();
+        this.postLike = post.getLikeCount();
+        List<CommentResponseDto> comments = new ArrayList<>();
         for (Comment comment : post.getComments()) {
-            comments.add(new CommentListDto(comment));
+            comments.add(new CommentResponseDto(comment));
         }
         this.comments = comments;
     }
