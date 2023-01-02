@@ -3,10 +3,12 @@ package com.example.springblogproject.dto;
 import com.example.springblogproject.entity.Comment;
 import com.example.springblogproject.entity.CommentLike;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class CommentResponseDto {
     private Long id;
     private String content;
