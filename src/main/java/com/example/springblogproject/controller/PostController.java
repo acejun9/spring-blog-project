@@ -2,6 +2,8 @@ package com.example.springblogproject.controller;
 
 import com.example.springblogproject.dto.PostRequestDto;
 import com.example.springblogproject.dto.PostResponseDto;
+import com.example.springblogproject.security.UserDetailsImpl;
+import com.example.springblogproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
 
@@ -33,7 +35,7 @@ public class PostController {
         return new ResponseEntity<>(postService.getPost(id),HttpStatus.OK);
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PostResponseDto> updateMyPost(
             @PathVariable Long id, @RequestBody @Validated PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         String username = userDetails.getUsername();
@@ -46,7 +48,7 @@ public class PostController {
         return new ResponseEntity<>(postService.updateAdminPost(id, postRequestDto),HttpStatus.OK);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMyPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
         String username = userDetails.getUsername();
         postService.deleteMyPost(id, username);
@@ -57,5 +59,10 @@ public class PostController {
     public ResponseEntity<String> deleteAdminPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
         postService.deleteAdminPost(id);
         return new ResponseEntity<>("delete success",HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateLikePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return new ResponseEntity<>(postService.updateLikePost(id,userDetails.getUsername()),HttpStatus.OK);
     }
 }

@@ -7,17 +7,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class CommentLike {
+public class PostLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", nullable = false)
-    private Comment comment;
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
     private String username;
 
-    public CommentLike(Comment comment, String username){
-        this.comment = comment;
+    public PostLike(Post post, String username){
+        this.post = post;
         this.username = username;
     }
+
 }
