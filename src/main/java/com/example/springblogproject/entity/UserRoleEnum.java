@@ -4,6 +4,7 @@ public enum UserRoleEnum {
     USER(Authority.USER),  // 사용자 권한
     ADMIN(Authority.ADMIN);  // 관리자 권한
 
+
     private final String authority;
 
     UserRoleEnum(String authority) {
