@@ -2,6 +2,8 @@ package com.example.springblogproject.controller;
 
 import com.example.springblogproject.dto.PostRequestDto;
 import com.example.springblogproject.dto.PostResponseDto;
+import com.example.springblogproject.security.UserDetailsImpl;
+import com.example.springblogproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
