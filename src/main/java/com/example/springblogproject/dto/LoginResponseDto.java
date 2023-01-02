@@ -8,13 +8,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class LoginResponseDto {
-
     private Long id;
     private String name;
     private String password;
     private UserRoleEnum role;
-
-    public LoginResponseDto(User user){
+    public LoginResponseDto(User user) {
         this.id = user.getId();
         this.name = user.getUsername();
         this.password = user.getPassword();
