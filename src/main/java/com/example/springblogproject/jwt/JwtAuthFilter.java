@@ -1,5 +1,6 @@
 package com.example.springblogproject.jwt;
 
+import com.example.springblogproject.dto.MsgStatusResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.springblogproject.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;

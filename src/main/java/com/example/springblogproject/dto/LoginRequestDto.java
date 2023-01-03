@@ -1,15 +1,12 @@
 package com.example.springblogproject.dto;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import jakarta.validation.constraints.NotNull;
 
-import org.aspectj.bridge.IMessage;
 
 @Getter
 @NoArgsConstructor
@@ -29,7 +26,5 @@ public class LoginRequestDto {
     {
         this.username = username;
         this.password = password;
-
-
     }
 }

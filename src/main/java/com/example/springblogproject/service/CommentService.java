@@ -8,15 +8,9 @@ import com.example.springblogproject.entity.Post;
 import com.example.springblogproject.repository.CommentLikeRepository;
 import com.example.springblogproject.repository.CommentRepository;
 import com.example.springblogproject.repository.PostRepository;
-import com.example.springblogproject.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
