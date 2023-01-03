@@ -1,6 +1,5 @@
 package com.example.springblogproject.dto;
 
-import com.example.springblogproject.entity.User;
 import com.example.springblogproject.util.UserRoleEnum;
 import lombok.Builder;
 import lombok.Getter;
