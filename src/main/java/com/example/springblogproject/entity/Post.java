@@ -1,5 +1,6 @@
 package com.example.springblogproject.entity;
 
+import com.example.springblogproject.util.Timestamped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,14 +10,13 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
-import javax.xml.stream.events.Comment;;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Getter
-public class Post extends Timestamped{
+public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
