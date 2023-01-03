@@ -1,5 +1,6 @@
 package com.example.springblogproject.exception;
 
+import com.example.springblogproject.dto.MsgStatusResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
