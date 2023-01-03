@@ -1,10 +1,10 @@
 package com.example.springblogproject.dto;
 
 import com.example.springblogproject.entity.Post;
+import com.example.springblogproject.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.xml.stream.events.Comment;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
