@@ -19,7 +19,7 @@ public class User extends Timestamped {
     private Long id;
 
     @Column
-    private String name;
+    private String username;
 
     @Column
     private String password;
@@ -29,8 +29,8 @@ public class User extends Timestamped {
     private UserRoleEnum role;
 
     @Builder
-    public User(String name, String password , UserRoleEnum role) {
-        this.name = name;
+    public User(String username, String password , UserRoleEnum role) {
+        this.username = username;
         this.password = password;
         this.role = role;
     }
