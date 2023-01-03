@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtil jwtUtil;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
