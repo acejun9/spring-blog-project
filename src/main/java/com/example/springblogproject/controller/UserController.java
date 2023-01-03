@@ -51,7 +51,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Validated @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
+    public ResponseEntity<String> login(@Validated @RequestBody LoginRequestDto loginRequestDto){
         LoginResponseDto loginResponseDto = userService.login(loginRequestDto);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(jwtUtil.AUTHORIZATION_HEADER,jwtUtil.createToken(loginResponseDto.getUsername(),loginResponseDto.getRole()));
