@@ -62,7 +62,7 @@ public class PostService {
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
         if(post.isEqualUsername(username)) {
-            post.update(title, content);
+            post.updateContent(title, content);
             postRepository.save(post);
         } else {
             throw new IllegalArgumentException("자신의 글만 수정할 수 있습니다.");
@@ -78,7 +78,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        post.update(title, content);
+        post.updateContent(title, content);
         postRepository.save(post);
         List<Comment> commentList = commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId());
         return new PostResponseDto(post, commentList);
