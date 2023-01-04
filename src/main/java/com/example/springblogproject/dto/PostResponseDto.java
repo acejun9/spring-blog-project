@@ -29,7 +29,7 @@ public class PostResponseDto {
 
     private Integer postLike;
 
-    public PostResponseDto(Post post){
+    public PostResponseDto(Post post, List<Comment> commentlist){
         this.id = post.getId();
         this.title = post.getTitle();
         this.username = post.getUsername();
