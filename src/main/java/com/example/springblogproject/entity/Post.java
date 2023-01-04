@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @NoArgsConstructor
 @Getter
@@ -37,7 +34,7 @@ public class Post extends Timestamped{
         this.username = username;
     }
 
-    public void update(String title, String content){
+    public void updateContent(String title, String content){
         this.title = title;
         this.content = content;
     }

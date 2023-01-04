@@ -1,15 +1,11 @@
 package com.example.springblogproject.entity;
 
-import com.example.springblogproject.entity.CommentLike;
-
 import com.example.springblogproject.util.Timestamped;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
