@@ -5,6 +5,7 @@ import com.example.springblogproject.dto.LoginRequestDto;
 import com.example.springblogproject.dto.LoginResponseDto;
 import com.example.springblogproject.dto.SignupRequestDto;
 import com.example.springblogproject.entity.User;
+import com.example.springblogproject.jwt.JwtUtil;
 import com.example.springblogproject.service.UserService;
 import com.example.springblogproject.util.UserRoleEnum;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +27,8 @@ import com.example.springblogproject.repository.UserRepository;
 public class UserController {
 
     private final UserService userService;
+
+    private final JwtUtil jwtUtil;
 
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
