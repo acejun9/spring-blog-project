@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -25,7 +27,7 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
 
-        Comment comment = new Comment(username, commentRequestDto.getContent(), post);
+        Comment comment = new Comment(username, commentRequestDto.getContent(), post.getId());
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment);
@@ -81,15 +83,18 @@ public class CommentService {
     @Transactional
     public String updateLikeComment(Long id, String username){
         Comment comment = commentRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
+                () -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다.")
         );
-        for(CommentLike commentLike: comment.getCommentLikes()){
-            if(commentLike.getUsername().equals(username)){
-                commentLikeRepository.delete(commentLike);
-                return "minus";
-            }
+
+        Optional<CommentLike> commentLike = commentLikeRepository.findByUsernameAndCommentId(username, id);
+        if(commentLike.isPresent()) {
+            comment.minusLikeCount();
+            commentLikeRepository.deleteByUsernameAndComment(username, comment);
+            return "Like -1";
+        } else {
+            comment.plusLikeCount();
+            commentLikeRepository.save(new CommentLike(comment, username));
+            return "Like +1";
         }
-        commentLikeRepository.save(new CommentLike(comment,username));
-        return "plus";
     }
 }

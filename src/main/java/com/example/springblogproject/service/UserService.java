@@ -20,7 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role ){
+    public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role){
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 

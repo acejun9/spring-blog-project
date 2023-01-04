@@ -25,16 +25,12 @@ import com.example.springblogproject.repository.UserRepository;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
-
     private final UserService userService;
-
     private final JwtUtil jwtUtil;
-
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Validated @RequestBody SignupRequestDto signupRequestDto){
-
         userService.signup(signupRequestDto,UserRoleEnum.USER);
 
         return new ResponseEntity<>("signup success", HttpStatus.OK);
@@ -43,10 +39,9 @@ public class UserController {
     @PostMapping("/admin/signup")
     public ResponseEntity<String> adminSignup(@Validated @RequestBody SignupRequestDto signupRequestDto){
         //토큰검사
-        if (!(signupRequestDto.getAdminToken().equals(ADMIN_TOKEN))) {
+        if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
             throw new IllegalArgumentException("관리자 암호가 잘못되어 등록이 불가능합니다.");
         }
-
         userService.signup(signupRequestDto, UserRoleEnum.ADMIN);
 
         return new ResponseEntity<>("signup success", HttpStatus.OK);

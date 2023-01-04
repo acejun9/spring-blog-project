@@ -12,22 +12,14 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class PostResponseDto {
-
     private Long id;
-
     private String title;
-
     private String username;
-
     private String content;
-
-    private List<CommentResponseDto> comments;
-
     private LocalDateTime createAt;
-
     private LocalDateTime modifiedAt;
-
     private Integer postLike;
+    private List<CommentResponseDto> comments;
 
     public PostResponseDto(Post post, List<Comment> commentlist){
         this.id = post.getId();
@@ -38,7 +30,7 @@ public class PostResponseDto {
         this.modifiedAt = post.getModifiedAt();
         this.postLike = post.getLikeCount();
         List<CommentResponseDto> comments = new ArrayList<>();
-        for (Comment comment : post.getComments()) {
+        for (Comment comment : commentlist) {
             comments.add(new CommentResponseDto(comment));
         }
         this.comments = comments;
