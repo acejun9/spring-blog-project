@@ -4,6 +4,7 @@ import com.example.springblogproject.entity.CommentLike;
 
 import com.example.springblogproject.util.Timestamped;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,36 +14,38 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Comment extends Timestamped {
+public class Comment extends Timestamped{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column
+    private String content;
     @Column
     private String username;
     @Column
-    private String content;
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
-    private List<CommentLike> commentLikes = new ArrayList<>();
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Integer likeCount;
+    @Column
+    private Long postId;
 
-    public Comment(String username, String content, Post post) {
+    @Builder
+    public Comment(String content, String username, Long postId){
+        this.likeCount = 0;
+        this.content = content;
         this.username = username;
-        this.content = content;
-        this.post = post;
+        this.postId = postId;
     }
 
-    public Integer getLikeCount() {
-        return commentLikes.size();
-    }
-
-    public void updateContent(String content) {
+    public void updateContent(String content){
         this.content = content;
     }
 
-    public boolean isEqualUsername(String username) {
+    public void plusLikeCount(){
+        this.likeCount++;
+    }
+    public void minusLikeCount(){
+        this.likeCount--;
+    }
+    public boolean isEqualUsername(String username){
         return this.username.equals(username);
     }
-
 }

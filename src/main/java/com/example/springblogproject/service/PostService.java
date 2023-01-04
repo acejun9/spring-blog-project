@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +41,8 @@ public class PostService {
         Post post = new Post(title, content, username);
 
         postRepository.save(post);
-        List<Comment> commentList = new ArrayList<>();
-        return new PostResponseDto(post, commentList);
+        List<Comment> emptyCommentList = new ArrayList<>();
+        return new PostResponseDto(post, emptyCommentList);
     }
 
     @Transactional
@@ -104,18 +105,22 @@ public class PostService {
         commentRepository.deleteByPostId(post.getId());
         postRepository.delete(post);
     }
+
     @Transactional
     public String updateLikePost(Long id, String username){
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        for(PostLike postLike: post.getPostLikes()){
-            if(postLike.getUsername().equals(username)){
-                postLikeRepository.delete(postLike);
-                return "minus";
-            }
+
+        Optional<PostLike> postLike = postLikeRepository.findByUsernameAndPostId(username, id);
+        if(postLike.isPresent()) {
+            postLikeRepository.deleteByUsernameAndPost(username, post);
+            post.minusLikeCount();
+            return "Like -1";
+        }else {
+            postLikeRepository.save(new PostLike(post,username));
+            post.plusLikeCount();
+            return "Like +1";
         }
-        postLikeRepository.save(new PostLike(post,username));
-        return "plus";
     }
 }

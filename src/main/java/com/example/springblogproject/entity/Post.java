@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Post extends Timestamped {
+public class Post extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,14 +26,12 @@ public class Post extends Timestamped {
     private String content;
     @Column
     private String username;
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<PostLike> postLikes = new ArrayList<>();
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @OrderBy (value = "createdAt desc" )
-    private List<Comment> comments = new ArrayList<>();
+    @Column
+    private Integer likeCount;
 
     @Builder
     public Post(String title, String content, String username){
+        this.likeCount = 0;
         this.title = title;
         this.content = content;
         this.username = username;
@@ -44,8 +42,12 @@ public class Post extends Timestamped {
         this.content = content;
     }
 
-    public Integer getLikeCount(){
-        return postLikes.size();
+    public void plusLikeCount(){
+        this.likeCount++;
+    }
+
+    public void minusLikeCount(){
+        this.likeCount--;
     }
 
     public boolean isEqualUsername(String username){
