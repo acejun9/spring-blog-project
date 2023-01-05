@@ -65,7 +65,7 @@ public class UserService {
 
         String accessToken = jwtUtil.createAccessToken(user.getUsername(),user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(user.getUsername());
-        RefreshToken refreshTokenEntity = new RefreshToken(user.getUsername(),refreshToken);
+        RefreshToken refreshTokenEntity = new RefreshToken(user.getUsername(),refreshToken.substring(7));
         refreshTokenRepository.deleteByUsername(user.getUsername());
         refreshTokenRepository.save(refreshTokenEntity);
 
@@ -74,8 +74,7 @@ public class UserService {
 
     @Transactional
     public TokenResponseDto reissueToken(String refreshToken){
-        String refreshTokenValue = refreshToken.substring(7);
-        String username = jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject();
+        String username = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
         RefreshToken findRefreshToken = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
                 () -> new EntityNotFoundException("Refresh Token Error")
         );
