@@ -10,37 +10,31 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Comment extends Timestamped{
+public class ReplyComment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String content;
-    @Column
     private String username;
     @Column
-    private Integer likeCount;
+    private String content;
     @Column
     private Long postId;
+    @Column
+    private Long parentId;
 
     @Builder
-    public Comment(String username, String content, Long postId){
-        this.likeCount = 0;
+    public ReplyComment(String username, String content, Long postId, Long parentId){
         this.content = content;
         this.username = username;
         this.postId = postId;
+        this.parentId = parentId;
     }
 
     public void updateContent(String content){
         this.content = content;
     }
 
-    public void plusLikeCount(){
-        this.likeCount++;
-    }
-    public void minusLikeCount(){
-        this.likeCount--;
-    }
     public boolean isEqualUsername(String username){
         return this.username.equals(username);
     }

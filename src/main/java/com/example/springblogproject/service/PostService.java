@@ -1,13 +1,17 @@
 package com.example.springblogproject.service;
 
+import com.example.springblogproject.dto.CommentResponseDto;
 import com.example.springblogproject.dto.PostRequestDto;
 import com.example.springblogproject.dto.PostResponseDto;
+import com.example.springblogproject.dto.ReplyCommentResponseDto;
 import com.example.springblogproject.entity.Comment;
 import com.example.springblogproject.entity.Post;
 import com.example.springblogproject.entity.PostLike;
+import com.example.springblogproject.entity.ReplyComment;
 import com.example.springblogproject.repository.CommentRepository;
 import com.example.springblogproject.repository.PostLikeRepository;
 import com.example.springblogproject.repository.PostRepository;
+import com.example.springblogproject.repository.ReplyCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +26,15 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final ReplyCommentRepository replyCommentRepository;
+    private final CommentService commentService;
 
 
     @Transactional
     public List<PostResponseDto> getAllPost(){
         List<PostResponseDto> list = new ArrayList<>();
         for(Post post :postRepository.findAllByOrderByCreatedAtDesc()){
-            List<Comment> commentList = commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId());
-            list.add(new PostResponseDto(post, commentList));
+            list.add(new PostResponseDto(post, getCommentResponseDtoListByPost(post)));
         }
         return list;
     }
@@ -38,11 +43,12 @@ public class PostService {
     public PostResponseDto createPost(PostRequestDto postRequestDto, String username) {
         String title = postRequestDto.getTitle();
         String content = postRequestDto.getContent();
-        Post post = new Post(title, content, username);
 
+        Post post = new Post(title, content, username);
         postRepository.save(post);
-        List<Comment> emptyCommentList = new ArrayList<>();
-        return new PostResponseDto(post, emptyCommentList);
+
+        List<CommentResponseDto> comments = new ArrayList<>();
+        return new PostResponseDto(post, comments);
     }
 
     @Transactional
@@ -50,8 +56,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        List<Comment> commentList = commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId());
-        return new PostResponseDto(post, commentList);
+        return new PostResponseDto(post, getCommentResponseDtoListByPost(post));
     }
 
     @Transactional
@@ -61,14 +66,12 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        if(post.isEqualUsername(username)) {
-            post.updateContent(title, content);
-            postRepository.save(post);
-        } else {
+        if(!post.isEqualUsername(username)) {
             throw new IllegalArgumentException("자신의 글만 수정할 수 있습니다.");
         }
-        List<Comment> commentList = commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId());
-        return new PostResponseDto(post, commentList);
+        post.updateContent(title, content);
+        postRepository.save(post);
+        return new PostResponseDto(post, getCommentResponseDtoListByPost(post));
     }
 
     @Transactional
@@ -80,8 +83,7 @@ public class PostService {
         );
         post.updateContent(title, content);
         postRepository.save(post);
-        List<Comment> commentList = commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId());
-        return new PostResponseDto(post, commentList);
+        return new PostResponseDto(post, getCommentResponseDtoListByPost(post));
     }
 
     @Transactional
@@ -89,12 +91,14 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        if(post.isEqualUsername(username)) {
-            commentRepository.deleteByPostId(post.getId());
-            postRepository.delete(post);
-        } else {
+        if(!post.isEqualUsername(username)) {
             throw new IllegalArgumentException("자신의 글만 삭제할 수 있습니다.");
         }
+        for(Comment comment: commentRepository.findByPostId(post.getId())){
+            commentService.deleteMyCommentById(comment.getId(),comment.getUsername());
+        }
+        deletePostLike(postLikeRepository.findByPost(post));
+        postRepository.delete(post);
     }
 
     @Transactional
@@ -102,7 +106,10 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
-        commentRepository.deleteByPostId(post.getId());
+        for(Comment comment: commentRepository.findByPostId(post.getId())){
+            commentService.deleteMyCommentById(comment.getId(),comment.getUsername());
+        }
+        deletePostLike(postLikeRepository.findByPost(post));
         postRepository.delete(post);
     }
 
@@ -114,7 +121,7 @@ public class PostService {
 
         Optional<PostLike> postLike = postLikeRepository.findByUsernameAndPostId(username, id);
         if(postLike.isPresent()) {
-            postLikeRepository.deleteByUsernameAndPost(username, post);
+            postLikeRepository.deleteByUsernameAndPostId(username, post.getId());
             post.minusLikeCount();
             return "Like -1";
         }else {
@@ -122,5 +129,26 @@ public class PostService {
             post.plusLikeCount();
             return "Like +1";
         }
+    }
+
+    @Transactional
+    public void deletePostLike(List<PostLike> postLikes){
+        for(PostLike postLike: postLikes){
+            postLike.getPost().minusLikeCount();
+            postLikeRepository.delete(postLike);
+        }
+    }
+
+    @Transactional
+    public List<CommentResponseDto> getCommentResponseDtoListByPost(Post post){
+        List<CommentResponseDto> comments = new ArrayList<>();
+        for(Comment comment: commentRepository.findByPostIdOrderByCreatedAtDesc(post.getId())) {
+            List<ReplyCommentResponseDto> replyComments = new ArrayList<>();
+            for (ReplyComment replyComment: replyCommentRepository.findByParentIdOrderByCreatedAtDesc(comment.getId())){
+                replyComments.add(new ReplyCommentResponseDto(replyComment));
+            }
+            comments.add(new CommentResponseDto(comment,replyComments));
+        }
+        return comments;
     }
 }

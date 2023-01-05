@@ -1,13 +1,9 @@
 package com.example.springblogproject.service;
 
 import com.example.springblogproject.dto.*;
-import com.example.springblogproject.entity.Post;
-import com.example.springblogproject.entity.RefreshToken;
-import com.example.springblogproject.entity.User;
+import com.example.springblogproject.entity.*;
 import com.example.springblogproject.jwt.JwtUtil;
-import com.example.springblogproject.repository.PostRepository;
-import com.example.springblogproject.repository.RefreshTokenRepository;
-import com.example.springblogproject.repository.UserRepository;
+import com.example.springblogproject.repository.*;
 import com.example.springblogproject.util.UserRoleEnum;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +19,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final PostLikeRepository postLikeRepository;
     private final PostService postService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
@@ -84,18 +82,28 @@ public class UserService {
     //회원 탈퇴 시 작성한 게시글 함께 삭제
     @Transactional
     public void withdraw(String username, String password){
-        User user = userRepository.findUserByUsername(username);
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다")
+        );
 
         if(!passwordEncoder.matches(password,user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
 
-        //postService의 delete기능 이용
+        //User 관련 데이터 전부 삭제
+        for(PostLike postLike: postLikeRepository.findByUsername(username)){
+            postLikeRepository.delete(postLike);
+            postLike.getPost().minusLikeCount();
+        }
+        for(CommentLike commentLike: commentLikeRepository.findByUsername(username)){
+            commentLikeRepository.delete(commentLike);
+            commentLike.getComment().minusLikeCount();
+        }
         List<Post> postList = postRepository.findPostsByUsername(username);
         for (Post post : postList) {
             postService.deleteMyPost(post.getId(),username);
         }
-
+        refreshTokenRepository.deleteByUsername(username);
         userRepository.delete(user);
     }
 
