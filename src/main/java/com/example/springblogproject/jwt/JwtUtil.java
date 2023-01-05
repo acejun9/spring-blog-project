@@ -1,5 +1,6 @@
 package com.example.springblogproject.jwt;
 
+import com.example.springblogproject.dto.LoginResponseDto;
 import com.example.springblogproject.util.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -21,9 +22,11 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String REFRESHTOKEN_HEADER = "Refresh_Token";
     public static final String AUTHORIZATION_KEY = "auth";
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    private static final long ACCESS_TOKEN_TIME = 30 * 1000L;
+    private static final long REFRESH_TOKEN_TIME = 60 * 1000L;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -38,7 +41,7 @@ public class JwtUtil {
     }
 
     // header 토큰 가져오기
-    public String resolveToken(HttpServletRequest request){
+    public String resolveAccessToken(HttpServletRequest request){
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if(StringUtils.hasText(bearerToken)&&bearerToken.startsWith(BEARER_PREFIX)){
             return bearerToken.substring(7);
@@ -46,15 +49,35 @@ public class JwtUtil {
         return "error";
     }
 
+    public String resolveRefreshToken(HttpServletRequest request){
+        String bearerToken = request.getHeader(REFRESHTOKEN_HEADER);
+        if(StringUtils.hasText(bearerToken)&&bearerToken.startsWith(BEARER_PREFIX)){
+            return bearerToken.substring(7);
+        }
+        return "error";
+    }
+
     //토큰 생성
-    public String createToken(String username, UserRoleEnum userRole){
+    public String createAccessToken(String username, UserRoleEnum role){
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                        .claim(AUTHORIZATION_KEY, role)
+                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
+                        .setIssuedAt(date)
+                        .signWith(signatureAlgorithm, key)
+                        .compact();
+    }
+
+    public String createRefreshToken(String username){
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(username)
+                        .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(signatureAlgorithm, key)
                         .compact();
