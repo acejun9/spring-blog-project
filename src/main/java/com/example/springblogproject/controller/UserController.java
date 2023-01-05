@@ -53,8 +53,8 @@ public class UserController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDto> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
-        TokenResponseDto tokenResponseDto = userService.reissueToken(tokenRequestDto);
+    public ResponseEntity<TokenResponseDto> reissue(HttpServletRequest request) {
+        TokenResponseDto tokenResponseDto = userService.reissueToken(request.getHeader(jwtUtil.REFRESHTOKEN_HEADER));
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(jwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
         responseHeaders.set(jwtUtil.REFRESHTOKEN_HEADER, tokenResponseDto.getRefreshToken());
