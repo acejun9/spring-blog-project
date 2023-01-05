@@ -68,8 +68,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponseDto reissueToken(TokenRequestDto tokenRequestDto){
-        String refreshToken = tokenRequestDto.getRefreshToken();
+    public TokenResponseDto reissueToken(String refreshToken){
         String refreshTokenValue = refreshToken.substring(7);
         String username = jwtUtil.getUserInfoFromToken(refreshTokenValue).getSubject();
         RefreshToken findRefreshToken = refreshTokenRepository.findByTokenValue(refreshToken).orElseThrow(
