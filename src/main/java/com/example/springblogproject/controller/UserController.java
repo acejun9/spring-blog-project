@@ -4,6 +4,7 @@ import com.example.springblogproject.dto.*;
 import com.example.springblogproject.entity.RefreshToken;
 import com.example.springblogproject.jwt.JwtUtil;
 import com.example.springblogproject.repository.RefreshTokenRepository;
+import com.example.springblogproject.security.UserDetailsImpl;
 import com.example.springblogproject.service.UserService;
 import com.example.springblogproject.util.UserRoleEnum;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +62,12 @@ public class UserController {
         responseHeaders.set(jwtUtil.AUTHORIZATION_HEADER, tokenResponseDto.getAccessToken());
         responseHeaders.set(jwtUtil.REFRESHTOKEN_HEADER, tokenResponseDto.getRefreshToken());
         return new ResponseEntity<>(tokenResponseDto, responseHeaders, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/withdrawal")
+    public ResponseEntity<String> withdraw(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody WithdrawalRequestDto withdrawalRequestDto){
+        userService.withdraw(userDetails.getUsername(), withdrawalRequestDto.getPassword());
+        return new ResponseEntity<>("회원 탈퇴가 완료되었습니다.",HttpStatus.OK);
     }
 
 }
