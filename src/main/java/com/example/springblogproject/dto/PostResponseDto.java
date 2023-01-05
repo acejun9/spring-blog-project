@@ -21,7 +21,7 @@ public class PostResponseDto {
     private Integer postLike;
     private List<CommentResponseDto> comments;
 
-    public PostResponseDto(Post post, List<Comment> commentlist){
+    public PostResponseDto(Post post, List<CommentResponseDto> comments){
         this.id = post.getId();
         this.title = post.getTitle();
         this.username = post.getUsername();
@@ -29,10 +29,6 @@ public class PostResponseDto {
         this.createAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
         this.postLike = post.getLikeCount();
-        List<CommentResponseDto> comments = new ArrayList<>();
-        for (Comment comment : commentlist) {
-            comments.add(new CommentResponseDto(comment));
-        }
         this.comments = comments;
     }
 }
