@@ -5,6 +5,7 @@ import com.example.springblogproject.entity.Post;
 import com.example.springblogproject.entity.RefreshToken;
 import com.example.springblogproject.entity.User;
 import com.example.springblogproject.jwt.JwtUtil;
+import com.example.springblogproject.repository.CommentRepository;
 import com.example.springblogproject.repository.PostRepository;
 import com.example.springblogproject.repository.RefreshTokenRepository;
 import com.example.springblogproject.repository.UserRepository;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final PostService postService;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -91,12 +93,14 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
 
-        //postService의 delete기능 이용
+        //작성한 게시물 삭제 - postService의 delete기능 이용
         List<Post> postList = postRepository.findPostsByUsername(username);
         for (Post post : postList) {
             postService.deleteMyPost(post.getId(),username);
         }
-
+        //작성한 댓글 삭제
+        commentRepository.deleteByUsername(username);
+        //유저 삭제
         userRepository.delete(user);
     }
 
