@@ -3,10 +3,7 @@ package com.example.springblogproject.service;
 import com.example.springblogproject.dto.CommentRequestDto;
 import com.example.springblogproject.dto.CommentResponseDto;
 import com.example.springblogproject.dto.ReplyCommentResponseDto;
-import com.example.springblogproject.entity.Comment;
-import com.example.springblogproject.entity.CommentLike;
-import com.example.springblogproject.entity.Post;
-import com.example.springblogproject.entity.ReplyComment;
+import com.example.springblogproject.entity.*;
 import com.example.springblogproject.repository.CommentLikeRepository;
 import com.example.springblogproject.repository.CommentRepository;
 import com.example.springblogproject.repository.PostRepository;
@@ -17,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -97,21 +93,26 @@ public class CommentService {
     }
 
     @Transactional
-    public String updateLikeComment(Long id, String username){
+    public String likeComment(Long id, String username){
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다.")
         );
+        comment.plusLikeCount();
+        commentLikeRepository.save(new CommentLike(comment, username));
+        return "Like +1";
+    }
 
-        Optional<CommentLike> commentLike = commentLikeRepository.findByUsernameAndCommentId(username, id);
-        if(commentLike.isPresent()) {
-            comment.minusLikeCount();
-            commentLikeRepository.deleteByUsernameAndCommentId(username, comment.getId());
-            return "Like -1";
-        } else {
-            comment.plusLikeCount();
-            commentLikeRepository.save(new CommentLike(comment, username));
-            return "Like +1";
-        }
+    @Transactional
+    public String cancelLikedComment(Long id, String username){
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 댓글이 존재 하지 않습니다.")
+        );
+        CommentLike commentLike = commentLikeRepository.findByUsernameAndCommentId(username, id).orElseThrow(
+                () -> new IllegalArgumentException("not my post")
+        );
+        commentLikeRepository.delete(commentLike);
+        comment.minusLikeCount();
+        return "Like -1";
     }
 
     @Transactional

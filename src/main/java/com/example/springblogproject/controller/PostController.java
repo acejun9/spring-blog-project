@@ -2,6 +2,8 @@ package com.example.springblogproject.controller;
 
 import com.example.springblogproject.dto.PostRequestDto;
 import com.example.springblogproject.dto.PostResponseDto;
+import com.example.springblogproject.entity.PostLike;
+import com.example.springblogproject.repository.PostLikeRepository;
 import com.example.springblogproject.security.UserDetailsImpl;
 import com.example.springblogproject.service.PostService;
 import com.example.springblogproject.util.UserRoleEnum;
@@ -15,12 +17,14 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
+    private final PostLikeRepository postLikeRepository;
 
     @GetMapping("")
     public ResponseEntity<List<PostResponseDto>> getAllPost() {
@@ -65,8 +69,21 @@ public class PostController {
         return new ResponseEntity<>("delete success",HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateLikePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return new ResponseEntity<>(postService.updateLikePost(id,userDetails.getUsername()),HttpStatus.OK);
+    @PostMapping("/{id}/like")
+    public ResponseEntity<String> likePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Optional<PostLike> postLike = postLikeRepository.findByUsernameAndPostId(userDetails.getUsername(),id);
+        if(postLike.isPresent()){
+            throw new IllegalArgumentException("already did like");
+        }
+        return new ResponseEntity<>(postService.likePost(id,userDetails.getUsername()),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<String> cancelLikedPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Optional<PostLike> postLike = postLikeRepository.findByUsernameAndPostId(userDetails.getUsername(),id);
+        if(postLike.isEmpty()){
+            throw new IllegalArgumentException("you didn't like");
+        }
+        return new ResponseEntity<>(postService.cancelLikedPost(id,userDetails.getUsername()),HttpStatus.OK);
     }
 }

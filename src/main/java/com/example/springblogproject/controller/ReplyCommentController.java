@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReplyCommentController {
     private final ReplyCommentService replyCommentService;
 
-    @PostMapping("/{postId}/comment/{parentId}")
+    @PostMapping("/{postId}/comments/{parentId}")
     public ResponseEntity<ReplyCommentResponseDto> createReplyComment(@PathVariable Long postId, @PathVariable Long parentId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return new ResponseEntity<>(replyCommentService.createReplyComment(postId, parentId, commentRequestDto, userDetails.getUsername()), HttpStatus.OK);
     }

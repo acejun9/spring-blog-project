@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -114,21 +113,26 @@ public class PostService {
     }
 
     @Transactional
-    public String updateLikePost(Long id, String username){
+    public String likePost(Long id, String username){
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
         );
+        postLikeRepository.save(new PostLike(post,username));
+        post.plusLikeCount();
+        return "Like +1";
+    }
 
-        Optional<PostLike> postLike = postLikeRepository.findByUsernameAndPostId(username, id);
-        if(postLike.isPresent()) {
-            postLikeRepository.deleteByUsernameAndPostId(username, post.getId());
-            post.minusLikeCount();
-            return "Like -1";
-        }else {
-            postLikeRepository.save(new PostLike(post,username));
-            post.plusLikeCount();
-            return "Like +1";
-        }
+    @Transactional
+    public String cancelLikedPost(Long id, String username){
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("해당 글이 존재 하지 않습니다.")
+        );
+        PostLike postLike = postLikeRepository.findByUsernameAndPostId(username, id).orElseThrow(
+                () -> new IllegalArgumentException("not my post")
+        );
+        postLikeRepository.delete(postLike);
+        post.minusLikeCount();
+        return "Like -1";
     }
 
     @Transactional
