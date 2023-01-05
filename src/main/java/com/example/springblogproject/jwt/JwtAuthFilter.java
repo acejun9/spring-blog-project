@@ -1,14 +1,9 @@
 package com.example.springblogproject.jwt;
 
 import com.example.springblogproject.dto.MsgStatusResponseDto;
-import com.example.springblogproject.entity.RefreshToken;
-import com.example.springblogproject.entity.User;
-import com.example.springblogproject.repository.RefreshTokenRepository;
-import com.example.springblogproject.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.springblogproject.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -31,8 +25,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 

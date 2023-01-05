@@ -2,8 +2,6 @@ package com.example.springblogproject.config;
 
 import com.example.springblogproject.jwt.JwtAuthFilter;
 import com.example.springblogproject.jwt.JwtUtil;
-import com.example.springblogproject.repository.RefreshTokenRepository;
-import com.example.springblogproject.repository.UserRepository;
 import com.example.springblogproject.security.CustomAuthenticationEntryPoint;
 import com.example.springblogproject.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
@@ -53,7 +49,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/user/admin/signup").permitAll()
                 .requestMatchers("/api/posts").permitAll()
                 .anyRequest().authenticated()
-                .and().addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService, userRepository, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class)
+                .and().addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint);
 
         //http.formLogin().loginProcessingUrl("/login").permitAll();
