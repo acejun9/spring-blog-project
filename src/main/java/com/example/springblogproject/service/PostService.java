@@ -97,7 +97,7 @@ public class PostService {
         for(Comment comment: commentRepository.findByPostId(post.getId())){
             commentService.deleteMyCommentById(comment.getId(),comment.getUsername());
         }
-        deletePostLike(postLikeRepository.findByPost(post));
+        deletePostLikes(postLikeRepository.findByPost(post));
         postRepository.delete(post);
     }
 
@@ -109,7 +109,7 @@ public class PostService {
         for(Comment comment: commentRepository.findByPostId(post.getId())){
             commentService.deleteMyCommentById(comment.getId(),comment.getUsername());
         }
-        deletePostLike(postLikeRepository.findByPost(post));
+        deletePostLikes(postLikeRepository.findByPost(post));
         postRepository.delete(post);
     }
 
@@ -137,7 +137,7 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePostLike(List<PostLike> postLikes){
+    public void deletePostLikes(List<PostLike> postLikes){
         for(PostLike postLike: postLikes){
             postLike.getPost().minusLikeCount();
             postLikeRepository.delete(postLike);

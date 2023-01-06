@@ -19,8 +19,11 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final ReplyCommentRepository replyCommentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentService commentService;
     private final PostService postService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
@@ -99,8 +102,13 @@ public class UserService {
             commentLikeRepository.delete(commentLike);
             commentLike.getComment().minusLikeCount();
         }
-        List<Post> postList = postRepository.findPostsByUsername(username);
-        for (Post post : postList) {
+        for(ReplyComment replyComment: replyCommentRepository.findByUsername(username)){
+            replyCommentRepository.delete(replyComment);
+        }
+        for(Comment comment: commentRepository.findByUsername(username)){
+            commentService.deleteMyCommentById(comment.getId(),username);
+        }
+        for (Post post : postRepository.findPostsByUsername(username)) {
             postService.deleteMyPost(post.getId(),username);
         }
         refreshTokenRepository.deleteByUsername(username);
