@@ -13,6 +13,7 @@ import com.example.springblogproject.repository.PostLikeRepository;
 import com.example.springblogproject.repository.PostRepository;
 import com.example.springblogproject.repository.ReplyCommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +31,9 @@ public class PostService {
 
 
     @Transactional
-    public List<PostResponseDto> getAllPost(){
+    public List<PostResponseDto> getAllPost(Pageable pageable){
         List<PostResponseDto> list = new ArrayList<>();
-        for(Post post :postRepository.findAllByOrderByCreatedAtDesc()){
+        for(Post post :postRepository.findAll(pageable)){
             list.add(new PostResponseDto(post, getCommentResponseDtoListByPost(post)));
         }
         return list;

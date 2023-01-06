@@ -8,6 +8,9 @@ import com.example.springblogproject.security.UserDetailsImpl;
 import com.example.springblogproject.service.PostService;
 import com.example.springblogproject.util.UserRoleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -27,8 +30,8 @@ public class PostController {
     private final PostLikeRepository postLikeRepository;
 
     @GetMapping("")
-    public ResponseEntity<List<PostResponseDto>> getAllPost() {
-        return new ResponseEntity<>(postService.getAllPost(), HttpStatus.OK);
+    public ResponseEntity<List<PostResponseDto>> getAllPost(@PageableDefault(size = 10, page = 0, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return new ResponseEntity<>(postService.getAllPost(pageable), HttpStatus.OK);
     }
 
     @PostMapping("")
