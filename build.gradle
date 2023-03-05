@@ -37,8 +37,14 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
     implementation group: 'org.json', name: 'json', version: '20220924'
+
+    implementation 'mysql:mysql-connector-java'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jar {
+    enabled = false
 }
